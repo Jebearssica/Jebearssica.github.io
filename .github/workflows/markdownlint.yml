@@ -1,0 +1,17 @@
+on: [push, pull_request]
+
+jobs:
+  lint:
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v2
+    - uses: carlosperate/download-file-action@v1.0.3
+      id: download-mdl-config
+      with:
+        file-url: 'https://github.com/Jebearssica/Jebearssica.github.io/blob/dev/.markdownlint.json'
+        file-name: 'markdownlint.json'
+    - uses: DavidAnson/markdownlint-cli2-action@v5
+      with:
+        globs: |
+          _posts/*.md
+          _tabs/*.md
