@@ -9,7 +9,6 @@ author: Jebearssica
 
 > TL;DR: `CellMapping` 在构造一个等价关系表, 从而在对 `Layout` 进行拷贝或对比时能够避免不必要的新 `Cell` 的生成, 从而直接将 `src_layout` 中的 `Cell` 直接拷贝/比较 `dst_layout` 中的 `Cell`.
 {: .prompt-info }
-
 > 为了缩减非重点代码, 以及简化写法, 文中涉及代码可能通过C++11以上的特性或直接进行简写, 与源代码不一致. 总之就是因为个人喜好, 有关 Klayout 的源码会有所变动.
 {: .prompt-tip }
 
@@ -480,4 +479,3 @@ CellMapping::create_from_geometry (const db::Layout &layout_a, db::cell_index_ty
   }
 }
 ```
-

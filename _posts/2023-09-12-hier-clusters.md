@@ -9,7 +9,6 @@ author: Jebearssica
 
 > 地狱般的代码, 所以请抱着批判的态度看下去.
 {: .prompt-warning }
-
 > 如果你了解[并查集]({% link _posts/2022-07-23-disjoint-set-union.md %})的基本概念的话, 对于了解 `hier_clusters` 的部分算法有很大帮助.
 {: .prompt-tip }
 
@@ -101,7 +100,7 @@ author: Jebearssica
 
 ### `build_local_cluster`
 
-这个函数实际只是一个非常简单的 wrapper function, 
+这个函数实际只是一个非常简单的 wrapper function, 略过
 
 ```c++
 template <class T>
