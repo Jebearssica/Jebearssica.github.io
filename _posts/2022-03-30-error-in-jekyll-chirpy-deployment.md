@@ -38,3 +38,35 @@ git remote set-url origin https://username:token@github.com/username/repository.
 原 repo 的 [issue](https://github.com/cotes2020/jekyll-theme-chirpy/issues/502) 中也有提到 workflow 中对main这个默认主分支和master默认主分支的问题, 目前暂定这两种情况
 
 最终确定, master & main都行, 并不存在上述bug, 已经反馈给上述issue. 最终造成该原因就是GitHub action disable
+
+## 新版本 htmlproofer 测试无法通过
+
+### `'a' tag is missing a reference`
+
+html5 允许该行为发生, 在 jekyll 渲染后生成的 html 文件可能存在这样的问题, 但这个并非人手动改的, 因此在 CI 中增加 `allow-missing-href=true` 从而允许这个行为
+
+```yml
+- name: Test site
+run: |
+    bundle exec htmlproofer _site \
+    \-\-disable-external=true \
+    \-\-ignore-urls "/^http:\/\/127.0.0.1/,/^http:\/\/0.0.0.0/,/^http:\/\/localhost/" \
+    \-\-allow-missing-href=true \
+```
+
+> FYI, `\-` 的含义为 -, 而 `-` 的含义为 _. 此外需在命令后方输入 `\` 确保参数仍然指示同一个命令
+{: .prompt-info }
+
+### `xxx is not an HTTPS link`
+
+不允许非 https 的链接, 我很赞成, 但 oiwiki 不更新证书我有啥办法, 增加 `enforce-https=false` 阻止这个检查
+
+```yml
+- name: Test site
+run: |
+    bundle exec htmlproofer _site \
+    \-\-disable-external=true \
+    \-\-ignore-urls "/^http:\/\/127.0.0.1/,/^http:\/\/0.0.0.0/,/^http:\/\/localhost/" \
+    \-\-allow-missing-href=true \
+    \-\-enforce-https=false \
+```
