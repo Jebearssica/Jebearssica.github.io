@@ -114,7 +114,7 @@ Placement new 重载时第一个参数必须是 `size_t`. 否则编译有以下�
 
 Placement delete 被重载后, 不会直接被关键字 `delete` 调用, 只有当通过 `new` 调用的构造函数异常抛出时, 才会调用重载的 placement delete. 它通常用于返还未完全创建的对象所占用的空间( 因为先分配内存, 后调用构造函数 ), 即进行异常处理.
 
-用 STL 中的 `basic_string` 举例, 在[vptr-vtbl](https://jebearssica.github.io/posts/Keywords-const/#简介与基础知识)中, 提到了 STL 中的 `string` 设计, 存在一种 reference counting 机制.
+用 STL 中的 `basic_string` 举例, 在[vptr-vtbl]({% link _posts/2022-08-05-keywords-const.md %})中, 提到了 STL 中的 `string` 设计, 存在一种 reference counting 机制.
 
 ```c++
 class basic_string

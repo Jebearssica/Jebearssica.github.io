@@ -7,3 +7,4 @@ categories: [Mordern C++]
 author: Jebearssica
 ---
 
+可以算得上是 Morden Cpp 的基石

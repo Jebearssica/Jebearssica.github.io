@@ -65,7 +65,7 @@ CellMapping::create_from_names (const db::Layout &layout_a, db::cell_index_type 
 > 逻辑异常复杂, 涉及到的机制也异常多, 需要非常熟悉 Klayout 基本 db, 包括各个类之间的存储关系等等, 因此需要先具备一些知识储备
 {: .prompt-warning }
 
-* [`CellCounter`]()
+* [`CellCounter`]({% link _posts/2023-08-04-cellcounter.md %})
 
 ```c++
 void 

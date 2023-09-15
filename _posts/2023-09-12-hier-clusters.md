@@ -10,7 +10,7 @@ author: Jebearssica
 > 地狱般的代码, 所以请抱着批判的态度看下去.
 {: .prompt-warning }
 
-> 如果你了解[并查集]()的基本概念的话, 对于了解 `hier_clusters` 的部分算法有很大帮助.
+> 如果你了解[并查集]({% link _posts/2022-07-23-disjoint-set-union.md %})的基本概念的话, 对于了解 `hier_clusters` 的部分算法有很大帮助.
 {: .prompt-tip }
 
 `hier_clusters` 很难通过几句话能够说出它的作用, 这里只试图探讨构造该数据结构的过程. 根据代码片段, 我们将其分为两部分.

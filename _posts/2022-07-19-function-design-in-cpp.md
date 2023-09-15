@@ -1,6 +1,6 @@
 ---
 layout: post
-title: Function Design in C++
+title: Function Design in Cpp
 date: 2022-07-19 13:40 +0800
 tags: [c++, design]
 categories: [C++, Design]

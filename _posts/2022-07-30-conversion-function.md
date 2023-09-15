@@ -25,7 +25,7 @@ public:
 
 * 无返回值:
 
-此时, 针对 `double` 的重载, 与[针对 `<<` 操作符的重载](https://jebearssica.github.io/posts/function-design-in-c++/#重载--操作符的注意事项)不同, 声明时**无返回值无形参**
+此时, 针对 `double` 的重载, 与[针对 `<<` 操作符的重载]({% link _posts/2022-07-19-function-design-in-cpp.md %}#重载--操作符的注意事项)不同, 声明时**无返回值无形参**
 
 你可以通过如下形式来实现任意转换函数:
 

@@ -1,6 +1,6 @@
 ---
 layout: post
-title: Comparison Function in C++
+title: Comparison Function in Cpp
 date: 2022-05-03 13:52 +0800
 tags: [c++, stl]
 categories: [C++, STL]
@@ -45,7 +45,7 @@ public:
 
 然而, 一切疑惑都可以根据这句话解决
 
-> Sorts the elements in the range [first, last) in **non-descending order**. —— from [cppreference](https://en.cppreference.com/w/cpp/algorithm/sort); Comparison function object (i.e. an object that satisfies the requirements of Compare) which returns ​true if the first argument is **less than** (i.e. is ordered before) the second.
+> Sorts the elements in the range \[first, last\) in **non-descending order**. —— from [cppreference](https://en.cppreference.com/w/cpp/algorithm/sort); Comparison function object (i.e. an object that satisfies the requirements of Compare) which returns ​true if the first argument is **less than** (i.e. is ordered before) the second.
 {: .prompt-tip }
 
 它排序是试图排出一个不递减(非严格递增)的序列, 你的 Comparison Function 就是比较规则, 返回 true 则说明首个元素在前, 那么我们就可以给上述代码写上注释了

@@ -96,6 +96,8 @@ private:
   // 提前终止条件, 超出边界
   } else if (! m_selection.empty () && m_selection.find (ci) == m_selection.end ()) {
     return 0;
+  ...
+  }
 ```
 
 ### 子任务
@@ -103,7 +105,7 @@ private:
 DFS 的第二个显著特征, 拆解分发子任务, 将子任务的结果合并作为当前任务的结果.
 
 ```c++
-  } else {
+  else {
 
     const db::Cell *cell = & mp_cell_graph->cell (ci);
     size_t count = 0;
@@ -114,6 +116,7 @@ DFS 的第二个显著特征, 拆解分发子任务, 将子任务的结果合并
       }
     }
   ...
+  }
 ```
 
 > 这里有个十分重要的概念, Instance 是无法在 Klayout GUI 的左侧 Cell tree 上完全体现的, 如果一个 Instance 在同一个 hierarchy tree 位置上重复多次, 此时只会有一个 Instance 在该位置, 对应代码中的 `CellInstArray`. 本文最后一小节会给出具体示例.
@@ -131,9 +134,6 @@ DFS 的第二个显著特征, 拆解分发子任务, 将子任务的结果合并
     // cache 中插入已经计算的结果
     m_cache.insert (std::make_pair (ci, count));
     return count;
-
-  }
-}
 ```
 
 ### 小结与实例分析
