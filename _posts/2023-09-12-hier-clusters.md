@@ -16,7 +16,7 @@ author: Jebearssica
 
 ## build local cluster
 
-可以简单概括为, 通过并查集构造相连集合.
+可以简单概括为, 通过并查集构造相连 Cell 的 shape 集合.
 
 ```c++
     //  first build all local clusters
@@ -44,6 +44,7 @@ author: Jebearssica
         }
       }
       // 逐个计算每个 cell 的 cluster
+      // 修改 m_per_cell_clusters
       build_local_cluster (layout, layout.cell (*c), conn, ec, separate_attributes);
 
       ++progress;
@@ -143,6 +144,8 @@ local_clusters<T>::build_clusters (const db::Cell &cell, const db::Connectivity 
   cluster_building_receiver<T, box_type> rec (conn, attr_equivalence, separate_attributes);
   // 根据 shape bbox 相交进行 rec.add
   bs.process (rec, 1 /*==touching*/, bc);
+  // 将 receiver 在 box_scanner 过程中生成的 cluster 根据 global_net 额外信息在 local_cluster 中实际构造
+  // 四舍五入可以视为一次结果的转移
   rec.generate_clusters (*this);
 
   if (attr_equivalence && attr_equivalence->size () > 0) {
@@ -182,10 +185,12 @@ struct cluster_building_receiver
   void generate_clusters (local_clusters<T> &clusters)
   {
     //  build the resulting clusters
+    // 遍历所有 cache cluster
     for (typename std::list<cluster_value>::const_iterator c = m_clusters.begin (); c != m_clusters.end (); ++c) {
 
       //  TODO: reserve?
       local_cluster<T> *cluster = clusters.insert ();
+      // 将 cache cluster 中 shape_vector 数据拷贝至结果 cluster
       for (typename shape_vector::const_iterator s = c->first.begin (); s != c->first.end (); ++s) {
         cluster->add (*s->first, s->second.first);
         cluster->add_attr (s->second.second);
@@ -195,6 +200,7 @@ struct cluster_building_receiver
 
       //  Add the global nets we derive from the attribute equivalence (join_nets of labelled vs.
       //  global nets)
+      // 将相连的等价 cluster 合并入 global_nets
       if (mp_attr_equivalence) {
 
         for (typename shape_vector::const_iterator s = c->first.begin (); s != c->first.end (); ++s) {
@@ -220,23 +226,25 @@ struct cluster_building_receiver
 
     }
   }
-
+  // 输入数据类型: shape, {layer, prop_id}
   void add (const T *s1, std::pair<unsigned int, size_t> p1, const T *s2, std::pair<unsigned int, size_t> p2)
   {
     if (m_separate_attributes && p1.second != p2.second) {
       return;
     }
+    // 在 box_scanner 中根据 bbox 判断相交后, 通过下面函数更细致的判断
+    // 先判断所处 layer 是否相交, 再实际判断 shape 是否相交
     if (! mp_conn->interacts (*s1, p1.first, *s2, p2.first)) {
       return;
     }
-
+    // 启发式并查集: 
     typename std::map<const T *, typename std::list<cluster_value>::iterator>::iterator ic1 = m_shape_to_clusters.find (s1);
     typename std::map<const T *, typename std::list<cluster_value>::iterator>::iterator ic2 = m_shape_to_clusters.find (s2);
-
+    // 查找是否存在集合
     if (ic1 == m_shape_to_clusters.end ()) {
 
       if (ic2 == m_shape_to_clusters.end ()) {
-
+        // 都没有, 新建一个集合, 构造 type 为 shape_value 的数据并插入 
         m_clusters.push_back (cluster_value ());
         typename std::list<cluster_value>::iterator c = --m_clusters.end ();
         c->first.push_back (std::make_pair (s1, p1));
@@ -285,18 +293,19 @@ struct cluster_building_receiver
     }
 
     //  consider connections to global nets
+    // 针对所有 layer 寻找 global connect
 
     db::Connectivity::global_nets_iterator ge = mp_conn->end_global_connections (p.first);
     for (db::Connectivity::global_nets_iterator g = mp_conn->begin_global_connections (p.first); g != ge; ++g) {
 
       typename std::map<size_t, typename std::list<cluster_value>::iterator>::iterator icg = m_global_to_clusters.find (*g);
-
+      // 同理 add, 针对 global 的依旧先创建一个新的 global to cluster 映射
       if (icg == m_global_to_clusters.end ()) {
 
-        ic->second->second.insert (*g);
+        ic->second->second.insert (*g);  // 对应的 cluster_value 中插入 global_net id
         m_global_to_clusters.insert (std::make_pair (*g, ic->second));
 
-      } else if (ic->second != icg->second) {
+      } else if (ic->second != icg->second) { // 对应的 cluster 不相等, 则进行合并视为新增连接关系
 
         //  join clusters
         if (ic->second->first.size () < icg->second->first.size ()) {
@@ -306,7 +315,7 @@ struct cluster_building_receiver
         }
 
       }
-
+      // 剩余情况说明对应的 cluster 相同, 则说明之前已经连接, 因此可以跳过
     }
   }
 
@@ -318,7 +327,7 @@ private:
   std::map<size_t, std::set<size_t> > m_global_nets_by_attribute_cluster;
   const tl::equivalence_clusters<size_t> *mp_attr_equivalence;
   bool m_separate_attributes;
-
+  // 两连通集合合并, 简单略过
   void join (typename std::list<cluster_value>::iterator ic1, typename std::list<cluster_value>::iterator ic2)
   {
     ic1->first.insert (ic1->first.end (), ic2->first.begin (), ic2->first.end ());
@@ -338,6 +347,8 @@ private:
 
 ## build hierarchy connection
 
+在 `build_local_clusters` 中已经获得了相连 Cell 中相连 shape 的 cluster, 在这一步将进一步获取 instance 与 instance 之间 shape 的连接关系
+
 很难描述在干嘛, 我先看看
 
 ```c++
@@ -351,19 +362,27 @@ private:
 
     std::set<db::cell_index_type> done;
     std::vector<db::cell_index_type> todo;
+    // 自底向上带记忆化的拓扑处理, 所有在范围内(called) 的子 cell 处理完后才会处理当前 cell
+    /*
+     * Q1: 会导致拓扑丢失?
+     * A1: 不会, 根据 called 的搜集流程, 父亲结点的所有子结点必定被搜集.
+    */
     for (db::Layout::bottom_up_const_iterator c = layout.begin_bottom_up (); c != layout.end_bottom_up (); ++c) {
-
+      // 记忆化
       if (called.find (*c) != called.end ()) {
 
         bool all_available = true;
         const db::Cell &cell = layout.cell (*c);
+        // 子结点的拓扑检查
         for (db::Cell::child_cell_iterator cc = cell.begin_child_cells (); ! cc.at_end () && all_available; ++cc) {
           all_available = (done.find (*cc) != done.end ());
         }
-
+        // 父结点进入等待队列
         if (all_available) {
           todo.push_back (*c);
         } else {
+          // 先处理现有的等待队列后, 插入父结点
+          // 可以视作上一个 hierarchy level 的第一个结点进入等待队列的情况
           tl_assert (! todo.empty ());
           build_hier_connections_for_cells (cbc, layout, todo, conn, breakout_cells, progress, instance_interaction_cache, separate_attributes);
           done.insert (todo.begin (), todo.end ());
@@ -374,14 +393,14 @@ private:
       }
 
     }
-
+    // 正常情况下来说, 这里处理的是 top cell
     build_hier_connections_for_cells (cbc, layout, todo, conn, breakout_cells, progress, instance_interaction_cache, separate_attributes);
   }
 ```
 
 ### `build_hier_connections_for_cells`
 
-仍然是一个 wrapper function
+仍然是一个 wrapper function, 事实上同一个等待队列里的任务**应当可以并行执行**
 
 ```c++
 template <class T>
@@ -396,6 +415,9 @@ hier_clusters<T>::build_hier_connections_for_cells (cell_clusters_box_converter<
 ```
 
 ### `build_hier_connections`
+
+> It is a disaster! ————~~from ti5 grand final~~
+{: .prompt-warning }
 
 ```c++
 template <class T>
@@ -412,6 +434,7 @@ hier_clusters<T>::build_hier_connections (cell_clusters_box_converter<T> &cbc, c
 
   //  NOTE: this is a receiver for both the child-to-child and
   //  local to child interactions.
+  // 这个 hc_receiver 最为关键, 依旧是基于 box_scanner 流程去处理 instance-instance
   std::unique_ptr<hc_receiver<T> > rec (new hc_receiver<T> (layout, cell, local, *this, cbc, conn, breakout_cells, &instance_interaction_cache, separate_attributes));
   cell_inst_clusters_box_converter<T> cibc (cbc);
 
@@ -438,7 +461,7 @@ hier_clusters<T>::build_hier_connections (cell_clusters_box_converter<T> &cbc, c
     tl::SelfTimer timer (tl::verbosity () > m_base_verbosity + 30, desc);
 
     db::box_scanner<db::Instance, unsigned int> bs (true, desc);
-
+    // 将所有收集到的当前 Cell 的 instance 插入 box_scanner 中
     for (std::vector<db::Instance>::const_iterator inst = inst_storage.begin (); inst != inst_storage.end (); ++inst) {
       if (! is_breakout_cell (breakout_cells, inst->cell_index ())) {
         bs.insert (inst.operator-> (), 0);
@@ -567,6 +590,11 @@ hier_clusters<T>::build_hier_connections (cell_clusters_box_converter<T> &cbc, c
 
 ### `hc_receiver`
 
+它太重要了, 啥是核心代码, 这就是核心代码!
+
+> 友情提示, 如果你看了上述仍然不知道 local cluster 实际指代 Cell 层次内的 shape 连接关系, ~~那建议转行别当程序员~~那显然是我的文档没写好, 按照编程指导, 在需要的地方做声明.
+{: prompt-tip }
+
 ```c++
 /**
  *  @brief The central interaction tester between clusters on a hierarchical level
@@ -648,11 +676,13 @@ public:
   /**
    *  @brief Receiver main event for instance-to-instance interactions
    */
+  // 上来先看 add 和 finish 这对函数, 那说明你很懂 box_scanner 的流程, 但可惜这是一个 wrapper function
   void add (const db::Instance *i1, unsigned int /*p1*/, const db::Instance *i2, unsigned int /*p2*/)
   {
     db::ICplxTrans t;
 
     std::list<std::pair<ClusterInstance, ClusterInstance> > ic;
+    // 上来先给几个默认构造的数据, 一看就是递归调用, 注意防止人脑递归栈爆栈
     consider_instance_pair (box_type::world (), *i1, t, db::CellInstArray::iterator (), *i2, t, db::CellInstArray::iterator (), ic);
 
     connect_clusters (ic);
@@ -669,6 +699,7 @@ public:
   /**
    *  @brief Receiver main event for local-to-instance interactions
    */
+  // 针对 local cluster 与 instance 的相交关系处理
   void add (const local_cluster<T> *c1, unsigned int /*p1*/, const db::Instance *i2, unsigned int /*p2*/)
   {
     std::list<ClusterInstanceInteraction> ic;
@@ -747,7 +778,7 @@ private:
   bool m_separate_attributes;
 
   /**
-   *  @brief Investigate a pair of instances
+   *  @brief Investigate a pair of instances: 探索一对 instance "的相交关系", brief 可真够 brief 的
    *
    *  @param common The common box of both instances
    *  @param i1 The first instance to investigate
@@ -1319,6 +1350,8 @@ private:
         //  for instance-to-instance interactions the number of connections is more important for the
         //  cost of the join operation: make the one with more connections the target
         //  TODO: this will be SLOW for STL's not providing a fast size()
+        // since c++11 the complexity std::list::size() is constant
+        // 谁叫你活该不上新一点的 gcc
         if (mp_cell_clusters->connections_for_cluster (x1).size () < mp_cell_clusters->connections_for_cluster (x2).size ()) {
           std::swap (x1, x2);
         }

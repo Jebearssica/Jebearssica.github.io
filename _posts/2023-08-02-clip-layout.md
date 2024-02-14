@@ -322,3 +322,14 @@ clip_cell (const db::Layout &layout,
 }
 
 ```
+
+## 总结
+
+我们需要明白, `clip_layout` 能够正确运转是建立在 instance proxy 的机制上. 即, 我们可以任意地插入 instance 构建 hierarchy 层级上的父子关系后, 最后更新这些 instance 指代的 Cell, 从而在版图上同步更新对应的 instance.
+
+* 这也是为何最后在执行 `clip_cell` 时并未严格保证自底向上计算. 反正过程插入的都是抽象的 proxy 而非实体, 且最终每个实体都会被正确插入 shape 与 child_inst.
+* 这也是为何针对每个 Cell 执行的计算过程只需要关注直接相连的子 instance. BTW, Klayout 执行 `flatten`, 意为 flatten 指定 cell 的代码中会出现 direct_children 这个变量名, 含义相同.
+
+此外, 其整个算法流程设计的基本思路是, 每个 target_layout 的 Cell 必定唯一对应一个 src_layout 的 Cell. 即 Cell 被切割成多个, 则是多个 clipped cell 对应一个 src_cell, 未被切割则是一一对应.
+
+* 这也是为何整个流程中, 都无需构建 hierarchy relation. instance 的父子关系完全依照 src_layout 中的情况.
