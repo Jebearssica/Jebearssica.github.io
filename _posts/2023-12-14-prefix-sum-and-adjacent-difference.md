@@ -101,32 +101,64 @@ for (int mask = 0; mask < (1 << n); ++mask) {
 }
 ```
 
+其时间复杂度可以根据每个集合状态 `mask` 被其每个子集各遍历一次来计算. 假设一个 `mask` 状态中有 `k` 个元素, 那么其共有 $2^{n-k}$ 个子集. 整体上, 我们需要处理 `[0, n]` 个元素的所有状态, 那么总时间复杂度为 $O(\Sigma_{0}^{n}(\dbinom{n}{m} \cdot 2^{n-k}))$. 根据二项式定理, 有 $O(3^n)$
+
+> 对于总体时间复杂度的理解, 我们可以认为有 `k` 个元素的状态一共有 `n` 选 `k` 个那么多.
+{: prompt-tip }
+
 考虑到上述的朴素解法并没有利用到已经计算完毕的前缀和做为缓存, 即我们可以使用动态规划将一个子集和的前缀和的计算由朴素计算转换为状态转移. 
 
 > 为何能够联想到动态规划? 其实能够想到一个集合 `subset` 可能是多个集合的子集. 那么很显然, 这个子集计算的结果能够直接作用在其父集, 类似记忆化 DFS(实际上就是迭代与递归之间的转换). 说点人话, 高维前缀和是由前一维度的已知状态转移而来, 且状态转移的过程中不会有重复.
 {: prompt-info }
 
-我们考虑状态转移方程, 根据上述代码, 子集 `sub` 将会对所有从末尾开始与 `sub` 相同的状态做出贡献. 因此我们有:
+我们定义 `dp[state]` 为状态 `state` 下的所有子集的和, 为了使得状态互相独立, 我们定义 `dp[state][i]` 为状态 `state` 下前 `i` 位相同的所有子集的和(下标从 1 开始, 由低位至高位计数).
+
+> 状态转移方程中的状态势必是离散的, 即面对一个问题, 如果其状态之间相交, 则应当构造一定的规则将相交状态进行划分.
+{: prompt-tip }
+
+我们考虑状态转移方程, 从 `state` 第 `i` 位开始. 如果为 0, 则该状态下的子集情况与 `dp[state][i - 1]` 完全一致. 因此有 `dp[state][i] = dp[state][i - 1]`; 如果为 1, 则该状态下的子集情况还要累加上, 令该位为 0 的子集情况, 即 `dp[state][i] = dp[state][i - 1] + dp[state ^ (1 << i)][i - 1]`. 这个的原理是, 对于一个状态 `state` 的第 `i` 位, 如果为 0, 则其所有子集必定在该位上为 0; 如果为 1, 则子集在该位上的值可以为 0 或 1.
+
+接着考虑初始状态, 很显然, `dp[state][0] = sum(input, state)`
+
+综上, 因此我们有以下代码:
 
 ```c++
 // n 代表当前维度
 // state 为二进制后表示的状态
-// dp[state][i]: 前 i 位与 state 相同的集合的对状态 state 的前缀和的贡献值, i 属于 [1, n]
+// dp[state][i]: 从低位开始前 i 位与 state 相同的集合的对状态 state 的前缀和的贡献值, i 属于 [1, n], i 为 0 表示初始状态
+// input[state]: 表示输入数组在状态 state 下的和
 std::vector<std::vector<int>> dp (1 << n, std::vector<int>(n));
 for (int mask = 0; mask < (1 << n); ++mask) {
   // 初始状态: state 本身对 prefix[state] 的贡献为 input[state] 
-  dp[mask][n - 1] = input[mask];
+  dp[mask][0] = input[mask];
   for (int i = 0; i < n; ++i) {
     dp[mask][i] = dp[mask][i - 1];
     if (mask & (1 << i)) {
-      dp[mask][i] += dp[mask - (1 << i)][i - 1];
+      dp[mask][i] += dp[mask ^ (1 << i)][i - 1];
     }
   }
-  
 }
-
 ```
 
+很显然, 可以压缩掉一个维度, 如下:
+
+```c++
+std::vector<int> dp(1 << n);
+// init
+for (size_t state = 0; state < (1 << n); ++state) {
+  dp[state] = input[state];
+}
+// dp
+for (size_t i = 0; i < n; ++i) {
+  for (size_t mask = 0; mask < (1 << n); ++mask) {
+    if (mask & (1 << i)) {
+      dp[mask] += dp[mask ^ (1 << i)];
+    }
+  }
+}
+```
+
+时间复杂度, 最外层遍历位数 $O(n)$, 最内层遍历所有状态 $O(2^n)$, 总时间复杂度 $ O(n2^n)$
 
 ## 差分
 
@@ -166,9 +198,11 @@ node[s]++, node[e]++, node[lca]--, node[lca].parent--;
 大致原理类似, 只是由于对边权重进行操作, 因此不涉及对 LCA 结点的父结点进行操作. 省略分析过程如下:
 
 ```c++
+// 事实上是把边权重绑定在子结点上, 即 a -> b 的权重值在孩子结点 a 上表示
 node[s]++, node[e]++, node[lca] -= 2;
 ```
 
 ## 参考
 
 * [oi wiki](https://oi-wiki.org/basic/prefix-sum)
+* [codeforces](https://codeforces.com/blog/entry/45223)

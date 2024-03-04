@@ -11,6 +11,4 @@ author: Jebearssica
 
 将内联函数的调用替换为内联函数的定义这一操作被称为内联展开(inline expansion or inlining), 通常可以认为
 
-
 ## 内联与宏
-

@@ -233,4 +233,3 @@ Layout::flatten (const db::Cell &source_cell, db::Cell &target_cell, const db::I
 
 }
 ```
-

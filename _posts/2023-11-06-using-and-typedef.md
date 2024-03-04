@@ -47,6 +47,4 @@ private:
 A<myList> a;
 ```
 
-
-
 - [ ] 类型擦除：显式指出 compare function type，即可在外确定类型，function type 与 lambda 捕获对象无关

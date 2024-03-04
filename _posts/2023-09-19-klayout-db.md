@@ -26,7 +26,7 @@ date: 2023-09-19 16:09 +0800
   * C1 x2
   * C2 x3
 
-top 下有两个 Cell, C1 与 C2. 因此 top 下**至少**有两个 `CellInstArray`, 分别代表两个 C1 instance 构成的集合与三个 C2 instance 构成的集合. 
+top 下有两个 Cell, C1 与 C2. 因此 top 下**至少**有两个 `CellInstArray`, 分别代表两个 C1 instance 构成的集合与三个 C2 instance 构成的集合.
 
 > 此处我们应当理解**至少**的含义. 两个 C1 instance 可能存在一个 `CellInstArray` 中(例如, 它们可以构成一个 `regular_array`), 同理三个 C2 instance 也可能存储在至少一个至多三个`CellInstArray` 中. 但是, C1 与 C2 的 instance 一定不会在同一个 `CellInstArray` 中.
 {: prompt-tip }
@@ -80,8 +80,6 @@ private:
 核心部分实质是 `basic_array`, 做为一个抽象类提供了一些遍历方式
 
 ### `regular_array`
-
-
 
 ### `iterated_array`
 
