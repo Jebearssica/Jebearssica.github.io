@@ -40,34 +40,42 @@ order: 4
 - 学士, 江苏大学, 物联网专业, 2016.9~2020.6
 - SCI 二区论文: Y. Yang, **L. Wu**, L. Zeng, T. Yan and Y. Zhan, "Joint Upsampling for Refocusing Light Fields Derived With Hybrid Lenses," in IEEE Transactions on Instrumentation and Measurement. (IF 5.6)
 - CCF C 类会议: L. Zeng, **L. Wu**, Y. Yang, X. Shen, Y. Zhan, "Deep Weighted Guided Upsampling Network for Depth of Field Image Upsampling," in Proceedings of the 4th ACM International Conference on Multimedia in Asia, MMAsia 2022.
+- 江苏省研究生科创立项 KYCX21_3376 负责人
 
 ## <img src="{{ site.baseurl }}/assets/briefcase-solid.svg" width="30px" alt="Briefcase icon"> 工作经历
 
-- **华芯巨数, C++ 研发工程师, 2022.8~至今**
+- **华芯巨数, C++ 研发工程师, 2022.8~2024.5**
 
-负责 opc drc 开发与性能优化(啊, 没错, 最开始实习了十个月)
+*C++, computational geometry, multithreading, optimization*
 
-## <img src="{{ site.baseurl }}/assets/project-diagram-solid.svg" width="30px" alt="Project diagram icon"> 项目经历
+多个客户不同场景下完成验收
 
-- **HDRC 搭建, 2022.8~2023.3**
+* 负责 opc drc 开发与性能优化
+* 负责 hierarchy db 的开发与性能优化
+* 负责 hierarchy partition 的开发与分布式上的应用及优化
 
-*C++11, computational geometry*
+- **正心元科技, C++ 研发工程师, 2024.5~2026.3**
 
-使得原有只支持 flat 的 opc drc 系统支持 hierarchy. 我在该项目中负责开发所有的基于 polygon 的 hierarchy 命令以及理解并总结 hierarchy 相关的 db 代码及原理.
+*C++, router db, common db*
 
-- **HDRC 性能优化项目, 2023.3~至今**
+首次外测并顺利验收通过
 
-*C++11, computational geometry, multithreading, optimization*
+* 负责 common db 的开发 (包含 def/lef/gds 等模块)
+* 依靠纯几何实现的 router db 初始化与构建
 
-从底层算法, 版图优化, 多线程分布式支持, redis 启用等多方面, 对系统层面的时间/内存/disk开销等性能方面进行优化. 我在该项目中负责优化底层 boolean 算法, 负责系统输入端的版图优化, 负责部分命令的多线程支持.
+- **弈芯科技, C++ 研发工程师, 2026.3~至今**
 
-对于底层算法, 通过 profiler 找到显著瓶颈部分, 修改 polygon 生成过程中的性能瓶颈; 对于输入版图优化, 通过 benchmark 的黑盒实验, 总结 benchmark 的 hierarchy tree 优化策略, 并通过特例触发验证猜想后实现自己的优化策略; 对于 merge 的多线程支持, 通过 per-level 拆分并查集算法尽可能实现更多流程的同步执行;
+*C++, index db, optimization*
 
-优化后的命令, 时间性能通常为 benchmark 的 15%~50% 避免了数量级上的时间性能差异. 对于优化后的版图, 在极端特例下的时间瓶颈消失. 对于多线程支持的命令, 线性度由于数据冲突的程度不同, 在 20%~70% 之间.
+continue working...
+
+* 负责 index db 的开发
+* 负责 dfm/correction 性能优化
 
 ## <img src="{{ site.baseurl }}/assets/tools-solid.svg" width="30px" alt="Tools icon"> 技能清单
 
 - C++/Python
-- Computational Geometry(Planar Scanline, Convex Hull)
-- Basic Algorithm(Union-Find, DP, Graph Traversal...)
-- Git
+- 4 years+ EDA development experience, familiar with various background about EDA flow(routing, calibration, physical verification, correction...)
+- especially familiar with common db in PR tool and both flat/hierarchy db(or flow) in physical verification (DRC)
+- Basic Algorithm(Union-Find, DP, Graph Traversal...), and Computational Geometry(Planar Scanline, Convex Hull)
+- Basic dev tools(git/valgrind/profiler)
