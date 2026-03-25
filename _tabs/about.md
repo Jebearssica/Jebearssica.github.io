@@ -8,46 +8,46 @@ order: 4
     <h1>吴联雄</h1>
     <div>
         <span>
-            <img src="../assets/phone-solid.svg" width="18px">
+            <img src="{{ site.baseurl }}/assets/phone-solid.svg" width="18px" alt="Phone icon">
             *******1986
         </span>
         ·
         <span>
-            <img src="../assets/envelope-solid.svg" width="18px">
+            <img src="{{ site.baseurl }}/assets/envelope-solid.svg" width="18px" alt="Email icon">
             jebearssica@outlook.com
         </span>
         ·
         <span>
-            <img src="../assets/github-brands.svg" width="18px">
+            <img src="{{ site.baseurl }}/assets/github-brands.svg" width="18px" alt="GitHub icon">
             <a href="https://github.com/jebearssica">jebearssica</a>
         </span>
         ·
         <span>
-            <img src="../assets/rss-solid.svg" width="18px">
+            <img src="{{ site.baseurl }}/assets/rss-solid.svg" width="18px" alt="RSS icon">
             <a href="https://jebearssica.github.io/">My Blog</a>
         </span>
     </div>
 </center>
 
-## <img src="../assets/info-circle-solid.svg" width="30px"> 个人信息
+## <img src="{{ site.baseurl }}/assets/info-circle-solid.svg" width="30px" alt="Info icon"> 个人信息
 
 - 男, 1998 年出生
 - C++ 研发工程师
 
-## <img src="../assets/graduation-cap-solid.svg" width="30px"> 教育经历
+## <img src="{{ site.baseurl }}/assets/graduation-cap-solid.svg" width="30px" alt="Graduation cap icon"> 教育经历
 
 - 硕士, 江苏大学, 计算机科学与技术专业, 2020.9~2023.6
 - 学士, 江苏大学, 物联网专业, 2016.9~2020.6
 - SCI 二区论文: Y. Yang, **L. Wu**, L. Zeng, T. Yan and Y. Zhan, "Joint Upsampling for Refocusing Light Fields Derived With Hybrid Lenses," in IEEE Transactions on Instrumentation and Measurement. (IF 5.6)
 - CCF C 类会议: L. Zeng, **L. Wu**, Y. Yang, X. Shen, Y. Zhan, "Deep Weighted Guided Upsampling Network for Depth of Field Image Upsampling," in Proceedings of the 4th ACM International Conference on Multimedia in Asia, MMAsia 2022.
 
-## <img src="../assets/briefcase-solid.svg" width="30px"> 工作经历
+## <img src="{{ site.baseurl }}/assets/briefcase-solid.svg" width="30px" alt="Briefcase icon"> 工作经历
 
 - **华芯巨数, C++ 研发工程师, 2022.8~至今**
 
 负责 opc drc 开发与性能优化(啊, 没错, 最开始实习了十个月)
 
-## <img src="../assets/project-diagram-solid.svg" width="30px"> 项目经历
+## <img src="{{ site.baseurl }}/assets/project-diagram-solid.svg" width="30px" alt="Project diagram icon"> 项目经历
 
 - **HDRC 搭建, 2022.8~2023.3**
 
@@ -65,7 +65,7 @@ order: 4
 
 优化后的命令, 时间性能通常为 benchmark 的 15%~50% 避免了数量级上的时间性能差异. 对于优化后的版图, 在极端特例下的时间瓶颈消失. 对于多线程支持的命令, 线性度由于数据冲突的程度不同, 在 20%~70% 之间.
 
-## <img src="../assets/tools-solid.svg" width="30px"> 技能清单
+## <img src="{{ site.baseurl }}/assets/tools-solid.svg" width="30px" alt="Tools icon"> 技能清单
 
 - C++/Python
 - Computational Geometry(Planar Scanline, Convex Hull)

@@ -21,7 +21,7 @@ ANTENNADIFFAREA: 输出 diffusion
 
 ## 计算方式
 
-![antenna check demo](image.png)
+![antenna check demo]({{ site.baseurl }}/assets/image.png)
 
 对于 N11 而言, 其对 gate 的影响将会分给 G1 G2;
 对于 N12 而言, 对于 gate 的影响将分给 G3;
