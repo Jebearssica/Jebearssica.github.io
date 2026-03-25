@@ -21,7 +21,7 @@ author: Jebearssica
 
 经典流程图, 描述了从零至流片即芯片生产的全流程. 前两个流程非常抽象非常高层级, 大致得是什么芯片设计架构师才能掌握的玄而又玄的东西. 本书以及本文专注于物理设计(Physical Design)的流程.
 
-![VLSI Design Flow](../assets/img/2024-08-17-vlsi-physical-design-note/VLSI-design-flow.png)
+![VLSI Design Flow]({{ site.baseurl }}/assets/img/2024-08-17-vlsi-physical-design-note/VLSI-design-flow.png)
 
 #### Physical Design
 
@@ -76,7 +76,7 @@ drawing. These generators only use circuit elements with known electrical parame
     * feedthrough: 横穿 cell row 可绕线的空间
     * over-the-cell(OTC): 使用 OTC 绕线策略会让 cell rows 共享电源与接地轨道, 而落后制程通常每个 cell row 有自己独立的电源与接地轨道.
 
-![OTC strategy](../assets/img/2024-08-17-vlsi-physical-design-note/OTC-strategy.png)
+![OTC strategy]({{ site.baseurl }}/assets/img/2024-08-17-vlsi-physical-design-note/OTC-strategy.png)
 
 * Macro: 更大规模的逻辑组成的具备可复用功能的 cell, 一般情况下可以像一般 cell 一样随意摆放
 * Gate array: 拥有特定逻辑功能的硅晶片
@@ -84,7 +84,7 @@ drawing. These generators only use circuit elements with known electrical parame
   * 逻辑元素: 每个逻辑元素可以视为多个查表构成, 其中查表可以视为一个 K 个输入的布尔函数.
   * 连接关系: 可以通过 switch box 将相邻的 channel 连接, 示例如下
 
-![switch box](../assets/img/2024-08-17-vlsi-physical-design-note/switch-box.png)
+![switch box]({{ site.baseurl }}/assets/img/2024-08-17-vlsi-physical-design-note/switch-box.png)
 
 ### Layout Layer and Design Rule
 
